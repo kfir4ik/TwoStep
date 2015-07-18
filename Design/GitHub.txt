@@ -1,0 +1,10 @@
+Install GitHub for windows - https://windows.github.com/
+---------------------------------------------------------------------------------------------------
+UserName: kfir4ik (kfir.sahartov@gmail.com)
+Password: Mamman13
+URL: https://github.com/kfir4ik/TwoStep
+
+Commands:
+git push "https://github.com/kfir4ik/TwoStep" master
+git pull  "https://github.com/kfir4ik/TwoStep" master
+git commit ".....write text...."
