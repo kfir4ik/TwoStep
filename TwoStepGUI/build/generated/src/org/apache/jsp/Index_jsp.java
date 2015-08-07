@@ -42,44 +42,42 @@ public final class Index_jsp extends org.apache.jasper.runtime.HttpJspBase
       _jspx_resourceInjector = (org.glassfish.jsp.api.ResourceInjector) application.getAttribute("com.sun.appserv.jsp.resource.injector");
 
       out.write('\n');
-        
+                
         HttpSession _session = request.getSession(true);
         
         Object gameSessionState = session.getAttribute("user_session_state");     
         
         if (gameSessionState != null)
         {
-           response.sendRedirect("WebLogic");
+           response.sendRedirect("UserWebLogic");
         }        
 
       out.write("\n");
       out.write("<html>\n");
       out.write("    <head>\n");
-      out.write("        <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\n");
       out.write("        <meta name=\"viewport\" content=\"initial-scale = 0.5, user-scalable=yes\"  />\n");
-      out.write("        <title>On Wheels of History</title>\n");
-      out.write("        <link rel=\"stylesheet\" type=\"text/css\" href=\"css/special.css\">\n");
-      out.write("        <script type=\"text/javascript\" src=\"scripts/jlogic.js\"></script>\n");
+      out.write("        <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\n");
+      out.write("        <title>Logging page</title>\n");
+      out.write("        <link rel=\"stylesheet\" type=\"text/css\" href=\"css/special2.css\">\n");
+      out.write("        <script type=\"text/javascript\" src=\"scripts/helper.js\"></script>\n");
       out.write("    </head>\n");
-      out.write("    <body>\n");
-      out.write("<div class=\"container\">\n");
-      out.write("\t<section id=\"content\">\n");
-      out.write("\t\t<form name=\"myform\" action=\"WebLogic\" method=\"post\" onsubmit=\"return false;\">                      \n");
-      out.write("\t\t\t<h1>Login Page</h1>\n");
+      out.write("    <body>    \n");
+      out.write("    <div class=\"container\">\t\n");
+      out.write("\t<h1>Logging Page.</h1><hr>\n");
+      out.write("\t\t<form name=\"myform\" action=\"UserWebLogic\" method=\"post\" onsubmit=\"return false;\">                      \t\n");
       out.write("\t\t\t<div>\n");
-      out.write("\t\t\t\t<input type=\"text\" placeholder=\"UserID\" required=\"\" name=\"uname\" id=\"uname\" />\n");
+      out.write("                            <input type=\"text\" placeholder=\"UserID\" required=\"\" name=\"uname\" id=\"uname\" style=\"width:500px\"/>\n");
       out.write("\t\t\t</div>\n");
       out.write("\t\t\t<div>\n");
-      out.write("\t\t\t\t<input type=\"password\" placeholder=\"Password\" required=\"\" name=\"password\" id=\"password\"/>\n");
+      out.write("                            <input type=\"password\" placeholder=\"Password\" required=\"\" name=\"password\" id=\"password\" style=\"width:500px\"/>\n");
       out.write("\t\t\t</div>\n");
       out.write("\t\t\t<div>                            \n");
-      out.write("                            <input type=\"submit\" value=\"Log in\" onclick=\"login_validation()\"/>\n");
-      out.write("\t\t\t\t<a href=\"mailto: support@onwheelsofhistory.com\">Forgot your password?</a>\n");
-      out.write("\t\t\t\t<a href=\"register.jsp\">Register</a>\n");
+      out.write("                            <input type=\"submit\" value=\"Log in\" onclick=\"login_validation1()\" style=\"width:100px;height:45px\"/>\n");
+      out.write("                            <a href=\"mailto: unsupported@email.com\">Forgot your password?</a>\n");
+      out.write("                            <a href=\"register.jsp\">Register</a>                            \n");
       out.write("\t\t\t</div>\n");
-      out.write("\t\t</form>\n");
-      out.write("\t</section>\n");
-      out.write("</div>\n");
+      out.write("\t\t</form>\t\t\n");
+      out.write("    </div>\t\n");
       out.write("</body>\n");
       out.write("</html>\n");
     } catch (Throwable t) {

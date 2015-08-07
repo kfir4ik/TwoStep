@@ -11,16 +11,17 @@
 <div class="container">
 	
 	<h1>Registration Page.</h1>
-	
-	<form name="myform" action="Settings" method="post" onsubmit="return login_validation2();">
+	<!--<form name="myform" action="UserWebLogic" method="post" onsubmit="return login_validation2();">-->
+	<form name="myform" action="UserWebLogic" method="post">
             
 		<div>
                     <p><u>Registration page:</u></p><hr>
-		
+		<!--
 			<label for="fname">First name</label>
 			<input id="fname" type="text" name="fname" maxlength="12" pattern="[A-Za-z]{2,15}">
 			<label for="lname">Last name</label>
 			<input id="lname" type="text" name="lname" maxlength="12" pattern="[A-Za-z]{2,15}">
+                 -->
 			<label for="lname">User name</label>
 			<input id="uname" type="text" name="uname" maxlength="12" pattern="[A-Za-z0-9]{3,15}">
 
@@ -40,5 +41,5 @@
 	</form>
 	
 </div>	
-    </body>
+</body>
 </html>

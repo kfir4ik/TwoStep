@@ -1,40 +1,38 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%        
+<%                
         HttpSession _session = request.getSession(true);
         
         Object gameSessionState = session.getAttribute("user_session_state");     
         
         if (gameSessionState != null)
         {
-           response.sendRedirect("WebLogic");
+           response.sendRedirect("UserWebLogic");
         }        
 %>
 <html>
     <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <meta name="viewport" content="initial-scale = 0.5, user-scalable=yes"  />
-        <title>On Wheels of History</title>
-        <link rel="stylesheet" type="text/css" href="css/special.css">
-        <script type="text/javascript" src="scripts/jlogic.js"></script>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Logging page</title>
+        <link rel="stylesheet" type="text/css" href="css/special2.css">
+        <script type="text/javascript" src="scripts/helper.js"></script>
     </head>
-    <body>
-<div class="container">
-	<section id="content">
-		<form name="myform" action="WebLogic" method="post" onsubmit="return false;">                      
-			<h1>Login Page</h1>
+    <body>    
+    <div class="container">	
+	<h1>Logging Page.</h1><hr>
+		<form name="myform" action="UserWebLogic" method="post" onsubmit="return false;">                      	
 			<div>
-				<input type="text" placeholder="UserID" required="" name="uname" id="uname" />
+                            <input type="text" placeholder="UserID" required="" name="uname" id="uname" style="width:500px"/>
 			</div>
 			<div>
-				<input type="password" placeholder="Password" required="" name="password" id="password"/>
+                            <input type="password" placeholder="Password" required="" name="password" id="password" style="width:500px"/>
 			</div>
 			<div>                            
-                            <input type="submit" value="Log in" onclick="login_validation()"/>
-				<a href="mailto: support@onwheelsofhistory.com">Forgot your password?</a>
-				<a href="register.jsp">Register</a>
+                            <input type="submit" value="Log in" onclick="login_validation1()" style="width:100px;height:45px"/>
+                            <a href="mailto: unsupported@email.com">Forgot your password?</a>
+                            <a href="register.jsp">Register</a>                            
 			</div>
-		</form>
-	</section>
-</div>
+		</form>		
+    </div>	
 </body>
 </html>

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
     <servlet>
-        <servlet-name>NewServlet</servlet-name>
-        <servlet-class>NewServlet</servlet-class>
+        <servlet-name>ShowPhotoServlet</servlet-name>
+        <servlet-class>Web.ShowPhotoServlet</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>Game</servlet-name>
@@ -19,10 +19,6 @@
     <servlet>
         <servlet-name>Question</servlet-name>
         <servlet-class>Web.QuestionPage</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>map</servlet-name>
-        <servlet-class>mapcontrol</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>Test</servlet-name>
@@ -56,10 +52,10 @@
         <servlet-name>modifier</servlet-name>
         <servlet-class>Web.modifier</servlet-class>
     </servlet>
-    <servlet-mapping>
-        <servlet-name>NewServlet</servlet-name>
-        <url-pattern>/NewServlet</url-pattern>
-    </servlet-mapping>
+    <servlet>
+        <servlet-name>AddPhotoServlet</servlet-name>
+        <servlet-class>Web.AddPhotoServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>Game</servlet-name>
         <url-pattern>/Game</url-pattern>
@@ -75,10 +71,6 @@
     <servlet-mapping>
         <servlet-name>Question</servlet-name>
         <url-pattern>/Question</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>map</servlet-name>
-        <url-pattern>/map</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>Test</servlet-name>
@@ -111,6 +103,14 @@
     <servlet-mapping>
         <servlet-name>modifier</servlet-name>
         <url-pattern>/modifier</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ShowPhotoServlet</servlet-name>
+        <url-pattern>/ShowPhotoServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AddPhotoServlet</servlet-name>
+        <url-pattern>/AddPhotoServlet</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>
