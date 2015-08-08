@@ -103,7 +103,7 @@ public class DBHandler
             }
 	}
 	          
-        public ResultSet getImageFromDb(String id) throws SQLException
+        public ResultSet getImage(String id) throws SQLException
         {
                 String query = "select Title,Data,CryptoKey,pubkey,privkey from Pictures where Title = " + id;
                 PreparedStatement stmt = m_Conn.prepareStatement(query);            
@@ -113,29 +113,43 @@ public class DBHandler
                 return result;
         }
         
-        public int getLastAddedUserId(String id) throws SQLException
+        public ResultSet getUser(String name) throws SQLException
         {
-                String query = "select uid from 'users' order by uid desc";
+                String query = "select * from Users where username = '" + name + "'";
                 PreparedStatement stmt = m_Conn.prepareStatement(query);            
                 ResultSet result = stmt.executeQuery();
                 result.next();
                 
-                int userId = result.getInt("uid");
-                
-                return userId;
-        }
+                return result;
+        }        
         
-        public int AddnewUserToDb(String name,String password) throws SQLException
+        public boolean doesUserExist(String name) throws SQLException
         {
-                  PreparedStatement pst = m_Conn.prepareStatement("INSERT INTO Users(username,password,hash) VALUES ((?),(?),(?),(?),(?))");                       
+                String query = "select count(*) as 'cnt' from Users where username = '" + name + "'";
+                PreparedStatement stmt = m_Conn.prepareStatement(query);            
+                ResultSet result = stmt.executeQuery();                
+                result.next();                
+                
+                int count = result.getInt("cnt");                            
+                
+                if (count > 0)
+                {
+                    return true;
+                }
+                
+                return false;
+        }        
+        
+        public void addNewUserToDb(String userName,String password,byte[] salt) throws SQLException
+        {
+            PreparedStatement pst = m_Conn.prepareStatement("INSERT INTO Users(username,password,salt) VALUES ((?),(?),(?))");                       
             
-//                String query = "select Title,Data,CryptoKey,pubkey,privkey from Pictures where Title = " + id;
-//                PreparedStatement stmt = m_Conn.prepareStatement(query);            
-//                ResultSet result = stmt.executeQuery();
-//                result.next();
-//                
-                return 0;
-                //return result;
+            pst.setString(1, userName);   
+            pst.setString(2, password);   
+            pst.setBytes(3, salt);   
+                  
+            pst.executeUpdate();  
+            pst.close();
        }        
        
         public ResultSet getImagesByQuery(String query)  throws SQLException
@@ -175,16 +189,16 @@ public class DBHandler
             finpk.close();
         }       
 
-	private String encodeFileToBase64Binary(String fileName)
-			throws IOException {
-
-		File file = new File(fileName);
-		byte[] bytes = loadFile(file);
-		byte[] encoded = Base64.encode(bytes);
-		String encodedString = new String(encoded);
-
-		return encodedString;
-	}
+//	private String encodeFileToBase64Binary(String fileName)
+//			throws IOException {
+//
+//		File file = new File(fileName);
+//		byte[] bytes    = loadFile(file);
+//		byte[] encoded  = Base64.encode(bytes);
+//		String encodedString = new String(encoded);
+//
+//		return encodedString;
+//	}
 
 	private static byte[] loadFile(File file) throws IOException {
 	    InputStream is = new FileInputStream(file);
@@ -214,7 +228,7 @@ public class DBHandler
 	{
 		int userId = 0;
 		Statement statement = m_Conn.createStatement();
-		ResultSet resultSet = statement.executeQuery("SELECT * FROM users WHERE user_name = '" + i_UserName + "' AND password = '" + i_Password + "'");
+		ResultSet resultSet = statement.executeQuery("SELECT * FROM users WHERE username = '" + i_UserName + "' AND password = '" + i_Password + "'");
 		
 		if (resultSet.next())
 		{

@@ -10,6 +10,8 @@ import java.io.PrintWriter;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.SecureRandom;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -26,7 +28,7 @@ import org.mindrot.jbcrypt.BCrypt;
  * @author kfirsa
  */
 @WebServlet(name = "UserWebLogic", urlPatterns = {"/UserWebLogic"})
-public class UserWebLogic extends HttpServlet {
+public class UserRegistrationWebLogic extends HttpServlet {
 
     private static DBHandler db_session;
     private static int load_state = 0;    
@@ -42,17 +44,17 @@ public class UserWebLogic extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
-        try {
-            /* TODO output your page here
+        try 
+        {            
             out.println("<html>");
             out.println("<head>");
             out.println("<title>Servlet UserWebLogic</title>");  
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet UserWebLogic at " + request.getContextPath () + "</h1>");
+        //    out.println("<h1>Servlet UserWebLogic at " + request.getContextPath () + "</h1>");
             out.println("</body>");
             out.println("</html>");
-             */
+             
         } finally {            
             out.close();
         }
@@ -82,8 +84,7 @@ public class UserWebLogic extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException
-    {
-        
+    {        
         if (db_session == null)
         {
             try
@@ -95,8 +96,7 @@ public class UserWebLogic extends HttpServlet {
                  }
             }
             catch (Exception exception)
-            {
-             //   out.println("Error --> " + exception.getMessage());
+            {             
                 db_session = null;          
                 return;
             }
@@ -104,45 +104,90 @@ public class UserWebLogic extends HttpServlet {
                         
         Object o_userName = request.getParameter("uname");                
         Object o_password = request.getParameter("password");        
-        String password = (String)o_password;
-        String salt;
         
+        String userName = (String)o_userName;
+        String password = (String)o_password;
+        
+        try 
+        {
+          if (db_session.doesUserExist(userName))
+          {
+            return;
+          }
+        }
+        catch (SQLException ex)
+        {
+            return;
+        }
+        
+        byte[] salt;                        
         try 
         {
             salt = generateNonce();
         } 
         catch (AuthenticationException ex) 
         {
-            salt = "";
+            salt = null;
         }
                 
-        String hashed = BCrypt.hashpw(password + salt, BCrypt.gensalt());        
-                         
-       // hashed1 = BCrypt.hashpw(password + salt, BCrypt.gensalt(12));        
+        String saltString = new String(salt);
+        String hashedPassword = BCrypt.hashpw(password + saltString, BCrypt.gensalt());        
         
-        if (BCrypt.checkpw(password + "a" + salt, hashed))
+        if (BCrypt.checkpw(password + saltString, hashedPassword))
         {
-            int i=1;
-        }        
+            int a=1;
+        }             
         
-        processRequest(request, response);
+        try 
+        {
+            db_session.addNewUserToDb(userName, hashedPassword, salt);
+        } 
+        catch (SQLException ex)
+        {
+            return;
+        }
+        
+        String hashedPassword1 = "";
+        byte[] salt1 = null;
+        ResultSet result;
+        try {
+            result = db_session.getUser(userName);
+            hashedPassword1 = result.getString("password");
+            salt1 = result.getBytes("salt");                        
+        }
+        catch (SQLException ex) {
+            
+        }
+        String saltString1 = new String(salt1);
+        
+        if (saltString1.equals(saltString))
+        {
+            int k=1;
+        }
+        //salt = salt1;
+        if (BCrypt.checkpw(password + saltString1, hashedPassword1))
+        {
+            int a=1;
+        }     
+         
+        //processRequest(request, response);
     }
     
-    private String generateNonce() throws AuthenticationException
+    private byte[] generateNonce() throws AuthenticationException
     {
         try {
             SecureRandom sr=SecureRandom.getInstance("SHA1PRNG");
             byte[] temp=new byte[55];
             sr.nextBytes(temp);
-            String n=new String(temp);
-            return n;
+            //String n=new String(temp);
+            return temp;
         }
         catch (Exception ex) 
         {
             //throw new AuthenticationException(e.getMessage(),e);
         }
   
-        return "";
+        return null;
     }
 
     /** 

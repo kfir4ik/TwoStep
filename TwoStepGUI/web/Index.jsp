@@ -20,7 +20,7 @@
     <body>    
     <div class="container">	
 	<h1>Logging Page.</h1><hr>
-		<form name="myform" action="UserWebLogic" method="post" onsubmit="return false;">                      	
+		<form name="myform" action="UserLoginLogic" method="post">                      	
 			<div>
                             <input type="text" placeholder="UserID" required="" name="uname" id="uname" style="width:500px"/>
 			</div>
@@ -28,7 +28,7 @@
                             <input type="password" placeholder="Password" required="" name="password" id="password" style="width:500px"/>
 			</div>
 			<div>                            
-                            <input type="submit" value="Log in" onclick="login_validation1()" style="width:100px;height:45px"/>
+                            <input type="submit" value="Log in" style="width:100px;height:45px"/>
                             <a href="mailto: unsupported@email.com">Forgot your password?</a>
                             <a href="register.jsp">Register</a>                            
 			</div>
