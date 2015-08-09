@@ -16,7 +16,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.mindrot.jbcrypt.BCrypt;
+import Cryptography.BCrypt;
 
 /**
  *
@@ -86,7 +86,7 @@ public class UserLoginLogic extends HttpServlet {
             {
                 db_session = DBHandler.getInstance();  
                 
-                 if (!db_session.is_connected()) {
+                 if (!db_session.isConnected()) {
                     db_session.connect();
                  }
             }
@@ -129,7 +129,7 @@ public class UserLoginLogic extends HttpServlet {
            
         if (BCrypt.checkpw(password + saltString1, hashedPassword))
         {
-            int a=1;
+            boolean passed = true;
         }            
         
         processRequest(request, response);

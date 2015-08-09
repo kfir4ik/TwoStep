@@ -50,7 +50,7 @@
             <input type="submit" value="Add Photo"/>
         </form>
         <hr>
-        <form name="form2" action="ShowPhotoServlet" method="post">           
+        <form name="form2" action="ShowPhotoServlet?pic_id=1" method="get">           
             <p>Show picture by title:</p>
                     <input id="pic_id" type="text" name="pic_id" maxlength="12" pattern="[A-Za-z0-9]{1,15}">
                     <input type="submit" id="send" value="Get Photo"/>

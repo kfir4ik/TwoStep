@@ -1,6 +1,6 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%                
-        HttpSession _session = request.getSession(true);
+        HttpSession _session = request.getSession(true);        
         
         Object gameSessionState = session.getAttribute("user_session_state");     
         

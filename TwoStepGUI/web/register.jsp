@@ -1,4 +1,12 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%                
+        HttpSession _session = request.getSession(true);        
+        
+        String s = "ok";
+        _session.setAttribute("kfir", s);
+        Object twoStepSession = _session.getAttribute("kfir");     
+       
+%>
 <!DOCTYPE html>
 <html>
     <head>
@@ -12,7 +20,8 @@
 	
 	<h1>Registration Page.</h1>
 	<!--<form name="myform" action="UserWebLogic" method="post" onsubmit="return login_validation2();">-->
-	<form name="myform" action="UserWebLogic" method="post">
+        <form name="myform" action="UserWebLogic" method="post">
+	<!--form name="myform" action="PicPasswordRegistration" method="post"-->
             
 		<div>
                     <p><u>Registration page:</u></p><hr>

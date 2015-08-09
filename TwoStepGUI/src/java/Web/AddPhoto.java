@@ -59,7 +59,7 @@ public class AddPhoto extends HttpServlet {
             {
                 db_session = DBHandler.getInstance();  
                 
-                if (!db_session.is_connected())
+                if (!db_session.isConnected())
                 {
                    db_session.connect();
                 }

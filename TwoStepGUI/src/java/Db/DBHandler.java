@@ -1,5 +1,6 @@
 package Db;
 
+import Cryptography.ImgCrypto;
 import com.sun.jersey.core.util.Base64;
 import java.io.File;
 import java.io.FileInputStream;
@@ -88,7 +89,7 @@ public class DBHandler
 		}
 	}
         
-        public boolean is_connected()
+        public boolean isConnected()
         {
             return is_active;
         }
@@ -105,13 +106,33 @@ public class DBHandler
 	          
         public ResultSet getImage(String id) throws SQLException
         {
-                String query = "select Title,Data,CryptoKey,pubkey,privkey from Pictures where Title = " + id;
-                PreparedStatement stmt = m_Conn.prepareStatement(query);            
-                ResultSet result = stmt.executeQuery();
-                result.next();
+             String query = "select Title,Data,CryptoKey,pubkey,privkey from Pictures where pic_Id = " + id;
+             PreparedStatement stmt = m_Conn.prepareStatement(query);            
+             ResultSet result = stmt.executeQuery();
+             result.next();
                 
-                return result;
+             return result;
         }
+        
+        public ResultSet getGetImagesNumbers(int userId) throws SQLException
+        {
+             String query = "select pic_id from Pictures";
+             PreparedStatement stmt = m_Conn.prepareStatement(query);            
+             ResultSet result = stmt.executeQuery();
+            // result.next();
+                
+             return result;            
+        }
+        
+        public int getGetNumberOfImages() throws SQLException
+        {
+                String query = "select count(*) as 'cnt' from Pictures";
+                PreparedStatement stmt = m_Conn.prepareStatement(query);            
+                ResultSet result = stmt.executeQuery();                
+                result.next();                
+                
+                return result.getInt("cnt");                            
+        }        
         
         public ResultSet getUser(String name) throws SQLException
         {
@@ -152,13 +173,13 @@ public class DBHandler
             pst.close();
        }        
        
-        public ResultSet getImagesByQuery(String query)  throws SQLException
-        {                        
-                PreparedStatement stmt = m_Conn.prepareStatement(query);            
-                ResultSet result = stmt.executeQuery();
-                
-                return result;
-       }
+//        public ResultSet getImagesByQuery(String query)  throws SQLException
+//        {                        
+//                PreparedStatement stmt = m_Conn.prepareStatement(query);            
+//                ResultSet result = stmt.executeQuery();
+//                
+//                return result;
+//       }
               
         public void addImage(FileItem file,String title,String uploadDirectory) throws Exception        
         {                                    
