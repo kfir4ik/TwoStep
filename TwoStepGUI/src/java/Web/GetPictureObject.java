@@ -16,7 +16,7 @@ import javax.servlet.http.HttpSession;
 @WebServlet(name = "PicPic", urlPatterns = {"/PicPic"})
 public class GetPictureObject extends HttpServlet 
 {
-    private static String UPLOAD_DIRECTORY = "D:\\temp\\";
+    private static String UPLOAD_DIRECTORY = "/home/developer/temp";
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {

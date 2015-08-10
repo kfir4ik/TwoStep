@@ -29,6 +29,6 @@
         <div style="display:none" id="dvloader"><img src="misc/359.gif" /></div>
     <div id="results">        
     </div>
-        <div><hr><a href="#" onclick="javascript: window.close();window.opener.location.reload();">Back.</a></div>
+        <div><hr><a href="Index.jsp">Go back to Index page.</a></div>
     </body>
 </html>

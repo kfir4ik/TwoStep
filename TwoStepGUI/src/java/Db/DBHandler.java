@@ -8,9 +8,6 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import org.apache.commons.fileupload.FileItem;
 
 /**
@@ -112,7 +109,7 @@ public class DBHandler
 
         public ResultSet getImageByTitle(String title) throws SQLException
         {
-             String query = "select Title,Data,CryptoKey,pubkey,privkey from Pictures where Title = " + title;
+             String query = "select Title,Data,CryptoKey,pubkey,privkey from Pictures where Title = '" + title + "'";
              PreparedStatement stmt = m_Conn.prepareStatement(query);            
              ResultSet result = stmt.executeQuery();
              result.next();

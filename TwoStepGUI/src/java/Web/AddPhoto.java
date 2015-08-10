@@ -28,14 +28,14 @@ public class AddPhoto extends HttpServlet
             out.println("<head>");
             out.println("<title>Add photo to game DB store</title>");            
             out.println("</head>");
-            out.println("<body align=\"left\" style=\"background-image: url('misc/bg1.jpg'); background-attachment: fixed; background-size: 100%; background-repeat: no-repeat; background-color: black;\">");
+            out.println("<body align=\"left\">");
             if (load_state == 0)
             {
                     out.println("<div><h2><p>Invalid input !!!<p></h2><a href='addphoto.jsp'>List Photos </a></div>");                            
             }
             else
             {
-                out.println("<br><div><h3><p>Picture was added Successfully.<p></h3><a href='addphoto.jsp'>List Photos </a></div>");            
+                out.println("<br><div><h3><p>Picture was added Successfully.<p></h3><a href='addphoto.jsp'>Back</a></div>");            
             }
             out.println("</body>");
             out.println("</html>");
@@ -48,7 +48,7 @@ public class AddPhoto extends HttpServlet
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        UPLOAD_DIRECTORY = "D:/temp/";                   
+        UPLOAD_DIRECTORY = "/home/developer/temp";                  
         
         if (db_session == null)
         {

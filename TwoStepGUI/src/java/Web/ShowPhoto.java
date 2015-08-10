@@ -92,7 +92,7 @@ public class ShowPhoto extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
     {            
-        UPLOAD_DIRECTORY = "D:/temp/";        
+        UPLOAD_DIRECTORY = "/home/developer/temp";
         //compiled code        
         Object o_picNumber = request.getParameter("pic_id");    
         String title = (String)o_picNumber;

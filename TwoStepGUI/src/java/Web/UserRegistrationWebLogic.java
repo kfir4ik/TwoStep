@@ -19,7 +19,7 @@ import javax.servlet.http.HttpSession;
 @WebServlet(name = "UserWebLogic", urlPatterns = {"/UserWebLogic"})
 public class UserRegistrationWebLogic extends HttpServlet {
 
-    private static String UPLOAD_DIRECTORY = "D:/temp/";    
+    private static String UPLOAD_DIRECTORY = "/home/developer/temp";    
     private static DBHandler db_session;
     private static ArrayList<PicMosaic> pictures;
     

@@ -1,13 +1,4 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%                
-        HttpSession _session = request.getSession(true);        
-        
-        String s = "ok";
-        _session.setAttribute("kfir", s);
-        Object twoStepSession = _session.getAttribute("kfir");     
-       
-%>
-<!DOCTYPE html>
 <html>
     <head>
         <meta name="viewport" content="initial-scale = 0.5, user-scalable=yes"  />

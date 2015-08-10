@@ -42,7 +42,7 @@ public class ImgCryptoReader {
        // The defualt properites, usualy obtained from config file
     // but in any case of failure the values is taken as they are written here...
     public static int blockSize = 16; 
-    public static String upload_direcotry = "D:\\temp\\";
+    public static String upload_direcotry = "/home/developer/temp";
     public static String keystore_file_name = upload_direcotry + "a.keystore";
     public static String keystore_password = "password";
     public static String signature_algo = "MD5withRSA";    

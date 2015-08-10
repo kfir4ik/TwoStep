@@ -1,14 +1,4 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%                
-        HttpSession _session = request.getSession(true);        
-        
-        Object gameSessionState = session.getAttribute("user_session_state");     
-        
-        if (gameSessionState != null)
-        {
-
-        }        
-%>
 <html>
     <head>
         <meta name="viewport" content="initial-scale = 0.5, user-scalable=yes"  />
