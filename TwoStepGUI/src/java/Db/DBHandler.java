@@ -1,11 +1,8 @@
 package Db;
 
 import Cryptography.ImgCrypto;
-import com.sun.jersey.core.util.Base64;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -52,8 +49,7 @@ public class DBHandler
 		}
 		
                 user_counter++;
-		return s_Instance;
-                
+		return s_Instance;                
 	}
 	
 	/**
@@ -84,8 +80,8 @@ public class DBHandler
 		{                    
                    e.getMessage();
                    s_Instance = null;
-                   user_counter=0;
-			// can't connect to the database :\
+                   user_counter = 0;
+		   // can't connect to the database :\
 		}
 	}
         
@@ -104,7 +100,7 @@ public class DBHandler
             }
 	}
 	          
-        public ResultSet getImage(String id) throws SQLException
+        public ResultSet getImageById(String id) throws SQLException
         {
              String query = "select Title,Data,CryptoKey,pubkey,privkey from Pictures where pic_Id = " + id;
              PreparedStatement stmt = m_Conn.prepareStatement(query);            
@@ -113,13 +109,22 @@ public class DBHandler
                 
              return result;
         }
+
+        public ResultSet getImageByTitle(String title) throws SQLException
+        {
+             String query = "select Title,Data,CryptoKey,pubkey,privkey from Pictures where Title = " + title;
+             PreparedStatement stmt = m_Conn.prepareStatement(query);            
+             ResultSet result = stmt.executeQuery();
+             result.next();
+                
+             return result;
+        }
         
-        public ResultSet getGetImagesNumbers(int userId) throws SQLException
+        public ResultSet getGetImagesIdNumbers(int userId) throws SQLException
         {
              String query = "select pic_id from Pictures";
              PreparedStatement stmt = m_Conn.prepareStatement(query);            
              ResultSet result = stmt.executeQuery();
-            // result.next();
                 
              return result;            
         }
@@ -131,7 +136,10 @@ public class DBHandler
                 ResultSet result = stmt.executeQuery();                
                 result.next();                
                 
-                return result.getInt("cnt");                            
+                int count = result.getInt("cnt");                            
+                result.close();
+                
+                return count;
         }        
         
         public ResultSet getUser(String name) throws SQLException
@@ -142,22 +150,35 @@ public class DBHandler
                 result.next();
                 
                 return result;
-        }        
+        }
+        
+        public void updateUserWithPicPassword(String userName,String picPassword) throws SQLException
+        {   
+            String queryString = "Update Users set picpassword = '" + picPassword + "' where username = '" + userName + "'";
+            //String q1 = String.format("Update Users set picpassword = '{0}' where username = '{1}'",picPassword,userName);
+            
+            PreparedStatement pst = m_Conn.prepareStatement(queryString);
+                  
+            pst.executeUpdate();  
+            pst.close();
+        }
         
         public boolean doesUserExist(String name) throws SQLException
         {
                 String query = "select count(*) as 'cnt' from Users where username = '" + name + "'";
                 PreparedStatement stmt = m_Conn.prepareStatement(query);            
                 ResultSet result = stmt.executeQuery();                
-                result.next();                
+                result.next();                                
                 
-                int count = result.getInt("cnt");                            
+                int count = result.getInt("cnt");                                            
+                
+                result.close();
                 
                 if (count > 0)
-                {
+                {                    
                     return true;
                 }
-                
+                                
                 return false;
         }        
         
@@ -172,15 +193,7 @@ public class DBHandler
             pst.executeUpdate();  
             pst.close();
        }        
-       
-//        public ResultSet getImagesByQuery(String query)  throws SQLException
-//        {                        
-//                PreparedStatement stmt = m_Conn.prepareStatement(query);            
-//                ResultSet result = stmt.executeQuery();
-//                
-//                return result;
-//       }
-              
+                
         public void addImage(FileItem file,String title,String uploadDirectory) throws Exception        
         {                                    
             PreparedStatement pst = m_Conn.prepareStatement("INSERT INTO Pictures(Data,Title,CryptoKey,pubkey,privkey) VALUES ((?),(?),(?),(?),(?))");                       
@@ -203,71 +216,10 @@ public class DBHandler
             pst.setBlob(5,finpkv); 
                        
             pst.executeUpdate();            
-            
-            fin.close();
             pst.close();
+            
+            fin.close();            
             finpkv.close();
             finpk.close();
-        }       
-
-//	private String encodeFileToBase64Binary(String fileName)
-//			throws IOException {
-//
-//		File file = new File(fileName);
-//		byte[] bytes    = loadFile(file);
-//		byte[] encoded  = Base64.encode(bytes);
-//		String encodedString = new String(encoded);
-//
-//		return encodedString;
-//	}
-
-	private static byte[] loadFile(File file) throws IOException {
-	    InputStream is = new FileInputStream(file);
-
-	    long length = file.length();
-	    if (length > Integer.MAX_VALUE) {
-	        // File is too large
-	    }
-	    byte[] bytes = new byte[(int)length];
-	    
-	    int offset = 0;
-	    int numRead = 0;
-	    while (offset < bytes.length
-	           && (numRead=is.read(bytes, offset, bytes.length-offset)) >= 0) {
-	        offset += numRead;
-	    }
-
-	    if (offset < bytes.length) {
-	        throw new IOException("Could not completely read file "+file.getName());
-	    }
-
-	    is.close();
-	    return bytes;
-	}       
-		
-	public int isUserAuthenticated(String i_UserName, String i_Password) throws SQLException
-	{
-		int userId = 0;
-		Statement statement = m_Conn.createStatement();
-		ResultSet resultSet = statement.executeQuery("SELECT * FROM users WHERE username = '" + i_UserName + "' AND password = '" + i_Password + "'");
-		
-		if (resultSet.next())
-		{
-			userId = resultSet.getInt("user_id");
-			if (userId != 0)
-			{				
-				SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
-				Date date = new Date();
-                                try {
-                                //    updateUserStartTime(userId,dateFormat.format(date));
-                                }
-                                catch(Exception ex)
-                                {
-                                    
-                                }
-			}
-		}
-		
-		return userId;
-	}
+        }       	
 }
