@@ -1,0 +1,7 @@
+NetBeans 7.1.2 IDE - with GlassFish as web service
+DB - MySQL server (local.)
+
+URL:
+====
+http://192.168.56.101:8080/TwoStepGUI/Index.jsp
+
