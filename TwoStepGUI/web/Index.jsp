@@ -6,7 +6,7 @@
         
         if (gameSessionState != null)
         {
-           response.sendRedirect("UserWebLogic");
+
         }        
 %>
 <html>
@@ -28,8 +28,7 @@
                             <input type="password" placeholder="Password" required="" name="password" id="password" style="width:500px"/>
 			</div>
 			<div>                            
-                            <input type="submit" value="Log in" style="width:100px;height:45px"/>
-                            <a href="mailto: unsupported@email.com">Forgot your password?</a>
+                            <input type="submit" value="Log in" style="width:100px;height:45px"/>                            
                             <a href="register.jsp">Register</a>                            
 			</div>
 		</form>		

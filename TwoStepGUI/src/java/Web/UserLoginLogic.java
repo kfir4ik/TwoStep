@@ -1,85 +1,39 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package Web;
 
 import Db.DBHandler;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import Cryptography.BCrypt;
+import Utils.PicMosaic;
+import java.util.ArrayList;
+import javax.servlet.http.HttpSession;
 
-/**
- *
- * @author kfirsa
- */
 @WebServlet(name = "UserLoginLogic", urlPatterns = {"/UserLoginLogic"})
-public class UserLoginLogic extends HttpServlet {
-
+public class UserLoginLogic extends HttpServlet 
+{
+    private static String UPLOAD_DIRECTORY = "D:/temp/";    
     private static DBHandler db_session;
-    private static int load_state = 0;    
+    private static ArrayList<PicMosaic> pictures;    
     
-    /** 
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        PrintWriter out = response.getWriter();
-        try {
-            /* TODO output your page here
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet UserLoginLogic</title>");  
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet UserLoginLogic at " + request.getContextPath () + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
-             */
-        } finally {            
-            out.close();
-        }
+       
+        Utils.Utilities.printPictureMosaic(pictures,response.getWriter(),"UserPicPasswordLogin",10,3);           
     }
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /** 
-     * Handles the HTTP <code>GET</code> method.
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        processRequest(request, response);
-    }
-
-    /** 
-     * Handles the HTTP <code>POST</code> method.
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        
+            throws ServletException, IOException
+    {
+        HttpSession _session = request.getSession(true);     
+           
         if (db_session == null)
         {
             try
@@ -90,9 +44,10 @@ public class UserLoginLogic extends HttpServlet {
                     db_session.connect();
                  }
             }
-            catch (Exception exception)
+            catch (Exception e)
             {             
                 db_session = null;          
+                Utils.Utilities.printErrorReport(response,e);
                 return;
             }
         }             
@@ -103,6 +58,8 @@ public class UserLoginLogic extends HttpServlet {
         String userName = (String)o_userName;
         String password = (String)o_password;
         
+        _session.setAttribute("username", userName);    
+        
         try 
         {
             if (!db_session.doesUserExist(userName))
@@ -110,37 +67,51 @@ public class UserLoginLogic extends HttpServlet {
                return;
             }
         }
-        catch (SQLException ex) 
+        catch (SQLException e) 
         {
+           Utils.Utilities.printErrorReport(response,e);
            return;
         }
-        String hashedPassword = "";
-        byte[] salt = null;
+        
+        String hashedPassword ;
+        byte[] salt;
         ResultSet result;
-        try {
+        
+        try
+        {
             result = db_session.getUser(userName);
-            hashedPassword = result.getString("password");
-            salt = result.getBytes("salt");                        
+            hashedPassword = result.getString("password");            
+            salt = result.getBytes("salt");                           
+            result.close();
         }
-        catch (SQLException ex) {
-            
-        }                
+        catch (SQLException e) 
+        { 
+            Utils.Utilities.printErrorReport(response,e);
+            return;
+        }       
+        
         String saltString1 = new String(salt);
            
-        if (BCrypt.checkpw(password + saltString1, hashedPassword))
+        if (!BCrypt.checkpw(password + saltString1, hashedPassword))
         {
-            boolean passed = true;
-        }            
+            Utils.Utilities.printErrorReport(response,new Exception("invalid password"));
+            return;
+        }          
+        
+        try
+        {
+            pictures = new ArrayList<PicMosaic>();    
+            Utils.Utilities.GeneratePicturesMosaic(db_session, UPLOAD_DIRECTORY, pictures);
+        }
+        catch (Exception e)
+        {  
+            Utils.Utilities.printErrorReport(response,e);
+            return;
+        }
+        
+        _session.setAttribute("matrix", pictures);    
         
         processRequest(request, response);
     }
 
-    /** 
-     * Returns a short description of the servlet.
-     * @return a String containing servlet description
-     */
-    @Override
-    public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
 }

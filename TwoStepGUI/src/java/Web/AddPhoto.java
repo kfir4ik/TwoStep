@@ -13,11 +13,11 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
-public class AddPhoto extends HttpServlet {
-
-       private static String UPLOAD_DIRECTORY;
-       private static DBHandler db_session;
-       private static int load_state = 0;
+public class AddPhoto extends HttpServlet 
+{
+    private static String UPLOAD_DIRECTORY;
+    private static DBHandler db_session;
+    private static int load_state = 0;
        
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -48,10 +48,7 @@ public class AddPhoto extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        UPLOAD_DIRECTORY = "D:/temp/";
-        
-        //PrintWriter out = response.getWriter();
-        //HttpSession _session = request.getSession(true);                
+        UPLOAD_DIRECTORY = "D:/temp/";                   
         
         if (db_session == null)
         {
@@ -64,9 +61,10 @@ public class AddPhoto extends HttpServlet {
                    db_session.connect();
                 }
             }
-            catch (Exception exception)
+            catch (Exception e)
             {
-                db_session = null;          
+                db_session = null;       
+                Utils.Utilities.printErrorReport(response,e);          
                 return;
             }
         }           
@@ -76,8 +74,9 @@ public class AddPhoto extends HttpServlet {
             DiskFileItemFactory factory = new DiskFileItemFactory();
             ServletFileUpload sfu  = new ServletFileUpload(factory);
 
-            if (! ServletFileUpload.isMultipartContent(request)) {
-                System.out.println("No file uploaded.");
+            if (! ServletFileUpload.isMultipartContent(request)) 
+            {                
+                Utils.Utilities.printErrorReport(response,new Exception("No file uploaded."));   
                 return;
             }
             
@@ -98,16 +97,10 @@ public class AddPhoto extends HttpServlet {
             
             processRequest(request, response);                                                            
         }
-        catch(Exception exception) 
+        catch(Exception e) 
         {
-
+            Utils.Utilities.printErrorReport(response,e);          
         }
-    }
-    
-    @Override
-    public String getServletInfo() {
-        return "";
-    }
-    
+    }  
 
 }

@@ -15,15 +15,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-@WebServlet(name = "UserPicPasswordLogin", urlPatterns = {"/UserPicPasswordLogin"})
-public class UserPicPasswordLogin extends HttpServlet
+@WebServlet(name = "PicPassStore", urlPatterns = {"/PicPassStore"})
+public class PicPassStore extends HttpServlet
 {    
     private static DBHandler db_session;    
     private static ArrayList<PicMosaic> pictures;
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException 
-    {
+            throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
         try 
@@ -33,15 +32,15 @@ public class UserPicPasswordLogin extends HttpServlet
             out.println("<title>Registration page</title>");            
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Welcome !!!</h1>");
+            out.println("<h1>congratulations! user was created.</h1>");
+            out.println("<a href=\"Index.jsp\">Login.</a>");
             out.println("</body>");
-            out.println("</html>");            
+            out.println("</html>");
         } 
         finally
         {            
             out.close();
         }
-        request.logout();
     }
 
     @Override
@@ -54,25 +53,25 @@ public class UserPicPasswordLogin extends HttpServlet
             {
                 db_session = DBHandler.getInstance();  
                 
-                 if (!db_session.isConnected()) 
-                 {
+                 if (!db_session.isConnected()) {
                     db_session.connect();
                  }
             }
             catch (Exception e)
             {             
-                db_session = null;  
-                Utils.Utilities.printErrorReport(response,e);
-                request.logout();
+                db_session = null;
+                Utils.Utilities.printErrorReport(response,e);          
                 return;
             }
-            request.logout();
-       }             
+        }             
         
         HttpSession _session = request.getSession(true);      
-        Object picsObject = _session.getAttribute("matrix");                
-        pictures = (ArrayList<PicMosaic>)picsObject;     
         
+        Object picsObject = _session.getAttribute("matrix");                
+        
+        String username = (String)_session.getAttribute("username");
+        
+        pictures = (ArrayList<PicMosaic>)picsObject;                     
         String selectedPictures = "";
         
         int max = 3;
@@ -84,51 +83,38 @@ public class UserPicPasswordLogin extends HttpServlet
             {
                 selectedPictures += ",";
             }            
-        }                       
-        
-        Object o_username = _session.getAttribute("username");                                  
-        String username = (String)o_username;                                  
-        
-        try 
-        {
-            ResultSet result = db_session.getUser(username);
-            
-            //String storedPassword = result.getString("picpassword");                    
-            
-            String hashedPassword ;
+        }                    
+                                                             
             byte[] salt;            
 
-            try
-            {                
-                hashedPassword = result.getString("picpassword");            
-                salt = result.getBytes("salt");                           
-                result.close();
-            }
-            catch (SQLException e) 
-            { 
-                Utils.Utilities.printErrorReport(response,e);
-                request.logout();
-                return;
-            }       
+        try
+        {                            
+            ResultSet result = db_session.getUser(username);
+            salt = result.getBytes("salt");                           
+            result.close();
+        }
+        catch (SQLException e) 
+        { 
+            Utils.Utilities.printErrorReport(response,e);
+            return;
+        }       
 
-            String saltString1 = new String(salt);
-                        
-            if (!BCrypt.checkpw(selectedPictures + saltString1, hashedPassword))                                    
-            //if (!BCrypt.checkpw(hashedPicPassword, storedPassword))
-            //if (!storedPassword.equals(selectedPictures))
-            {
-                Utils.Utilities.printErrorReport(response,new Exception("Invalid login data."));
-                return;
-            }
+        String saltString = new String(salt);                   
+        
+        //adding hashing
+        String hashedPicPassword = BCrypt.hashpw(selectedPictures + saltString, BCrypt.gensalt());        
+                
+        try 
+        {
+            db_session.updateUserWithPicPassword(username,hashedPicPassword);
         } 
         catch (SQLException e) 
         {
             db_session = null;  
-            Utils.Utilities.printErrorReport(response,e);
-            request.logout();
+            Utils.Utilities.printErrorReport(response,e);          
             return;
         }
         
         processRequest(request, response);
-    } 
+    }    
 }

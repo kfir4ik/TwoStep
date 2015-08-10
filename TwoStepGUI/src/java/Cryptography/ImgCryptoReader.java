@@ -161,17 +161,18 @@ public class ImgCryptoReader {
         //gets user configuration file
         Properties configFile = new Properties();   //init prop object
         
-        //String config_file_path_location = config_file_name;                        
-        //String config_file_path_location = "C:\\Users\\kfirsa\\Documents\\NetBeansProjects\\TwoStepGUI\\config_file.properties";
+//String config_file_path_location = config_file_name;                        
+//String config_file_path_location = "C:\\Users\\kfirsa\\Documents\\NetBeansProjects\\TwoStepGUI\\config_file.properties";
         
-        save_enc_file_name = upload_direcotry + "encpic";
-                //fileName;
+        save_enc_file_name = upload_direcotry + "encpic";        
                 
-        try
-        {
+
+//load properites from file
+//==================================================================================================================            
+//        try
+//        {        
 //            configFile.load(new FileInputStream(config_file_path_location));  //load the file
 //        
-//            //load properites from file
 //            blockSize = Integer.parseInt(load_property(configFile,"BLOCK_SIZE")); //get the prop. from file
 //            rsa_key_size = Integer.parseInt(load_property(configFile,"RSA_KEY_SIZE")); //get the prop. from file
 //            keystore_file_name = load_property(configFile,"KEYSTORE_FILE_NAME");     
@@ -185,11 +186,11 @@ public class ImgCryptoReader {
 //            key_gen_algorithem = load_property(configFile,"KEY_GEN_ALGORITHEM");
 //            key_store_type = load_property(configFile,"KEY_STORE_TYPE");       
 //            aes_type = load_property(configFile,"AES_TYPE"); 
-        }
-        catch (Exception ex) //in case of exception gets the deafult proprerties
-        {
-            System.out.println(ex.toString());
-        }
+//        }
+//        catch (Exception ex) //in case of exception gets the deafult proprerties
+//        { }
+//==================================================================================================================                        
+
                      
         //gets public key from file
         //===============================================================
@@ -241,7 +242,7 @@ public class ImgCryptoReader {
         byte[] aes_encoded = decoder.decodeBuffer(cipherKey_base64);                                                                      
 
         byte[] iv_encoded= { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-                //decoder.decodeBuffer(aesIV_base64);     
+                            //decoder.decodeBuffer(aesIV_base64);     
         
         //gets the key and iv of AES algorithem
         SecretKey keyValue = new SecretKeySpec(aes_encoded,"AES");   //create the real key  
@@ -257,7 +258,8 @@ public class ImgCryptoReader {
         
         //boolean status = Write_decrypted_file(save_enc_file_name,save_dec_file_name,p,publicKey);       
          
-         if (status) {
+         if (status) 
+         {
             System.out.printf("The file was decoded !\n");
          }
          else {
