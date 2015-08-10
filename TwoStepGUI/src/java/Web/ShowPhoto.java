@@ -2,6 +2,7 @@ package Web;
 
 import Db.DBHandler;
 import Cryptography.ImgCryptoReader;
+import Utils.Constants;
 import Utils.Utilities;
 import java.io.*;
 import java.nio.file.Files;
@@ -13,10 +14,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
-public class ShowPhoto extends HttpServlet {
-              
-    private static String UPLOAD_DIRECTORY;
+public class ShowPhoto extends HttpServlet 
+{              
     private static String imageName;
     private static DBHandler db_session;    
        
@@ -43,6 +44,9 @@ public class ShowPhoto extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException 
     {
+        HttpSession _session = request.getSession(true);             
+        db_session = (DBHandler) _session.getAttribute("db");  
+        
         Object o_picNumber = request.getParameter("pic_id");        
 
         String title = (String)o_picNumber;
@@ -56,6 +60,7 @@ public class ShowPhoto extends HttpServlet {
                  if (!db_session.isConnected()) 
                  {
                     db_session.connect();
+                    _session.setAttribute("db", db_session);
                  }
             }
             catch (Exception e)
@@ -70,14 +75,14 @@ public class ShowPhoto extends HttpServlet {
         {             
                 ResultSet result = db_session.getImageByTitle(title);
                 
-                Utilities.ExtractDataFromDb(result,UPLOAD_DIRECTORY + "encpic","Data");
-                Utilities.ExtractDataFromDb(result,UPLOAD_DIRECTORY + "publickey","pubkey");
-                Utilities.ExtractDataFromDb(result,UPLOAD_DIRECTORY + "a.keystore","privkey");
+                Utilities.ExtractDataFromDb(result,Constants.UPLOAD_DIRECTORY + "encpic","Data");
+                Utilities.ExtractDataFromDb(result,Constants.UPLOAD_DIRECTORY + "publickey","pubkey");
+                Utilities.ExtractDataFromDb(result,Constants.UPLOAD_DIRECTORY + "a.keystore","privkey");
                 
                 String ckey = result.getString("CryptoKey");                                  
                 
                 imageName = title + String.valueOf(Utilities.randInt(1,100)) + ".jpg";
-                ImgCryptoReader.LoadImageFromDb(UPLOAD_DIRECTORY + "encpic",ckey,imageName);                               		
+                ImgCryptoReader.LoadImageFromDb(Constants.UPLOAD_DIRECTORY + "encpic",ckey,imageName);                               		
                                                
                 processRequest(request, response);  
                                                             
@@ -91,8 +96,10 @@ public class ShowPhoto extends HttpServlet {
     
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
-    {            
-        UPLOAD_DIRECTORY = "/home/developer/temp";
+    {                            
+        HttpSession _session = request.getSession(true);             
+        db_session = (DBHandler) _session.getAttribute("db");    
+        
         //compiled code        
         Object o_picNumber = request.getParameter("pic_id");    
         String title = (String)o_picNumber;
@@ -105,12 +112,14 @@ public class ShowPhoto extends HttpServlet {
                 
                if (!db_session.isConnected()) {
                   db_session.connect();
+                  _session.setAttribute("db", db_session);
                }
             }
             catch (Exception e)
             {             
                db_session = null;      
                Utils.Utilities.printErrorReport(response,e);
+               _session.invalidate();
                return;
             }
         }           
@@ -124,15 +133,15 @@ public class ShowPhoto extends HttpServlet {
                         
             ResultSet result = db_session.getImageByTitle(title);
 
-            Utilities.ExtractDataFromDb(result,UPLOAD_DIRECTORY + "encpic","Data");
-            Utilities.ExtractDataFromDb(result,UPLOAD_DIRECTORY + "publickey","pubkey");
-            Utilities.ExtractDataFromDb(result,UPLOAD_DIRECTORY + "a.keystore","privkey");
+            Utilities.ExtractDataFromDb(result,Constants.UPLOAD_DIRECTORY + "encpic","Data");
+            Utilities.ExtractDataFromDb(result,Constants.UPLOAD_DIRECTORY + "publickey","pubkey");
+            Utilities.ExtractDataFromDb(result,Constants.UPLOAD_DIRECTORY + "a.keystore","privkey");
 
             String ckey = result.getString("CryptoKey");                              
                         
             imageName = path + title + String.valueOf(Utilities.randInt(1,100)) + ".jpg";
                                 
-            ImgCryptoReader.LoadImageFromDb(UPLOAD_DIRECTORY + "encpic",ckey,imageName);                               		
+            ImgCryptoReader.LoadImageFromDb(Constants.UPLOAD_DIRECTORY + "encpic",ckey,imageName);                               		
                         
             processRequest(request, response);           
          }
@@ -140,6 +149,7 @@ public class ShowPhoto extends HttpServlet {
          {
                Utils.Utilities.printErrorReport(response,e);  
                request.logout();
+                _session.invalidate();
          }        
     }            
 }

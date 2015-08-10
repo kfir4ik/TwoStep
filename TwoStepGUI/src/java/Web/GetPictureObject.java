@@ -1,5 +1,6 @@
 package Web;
 
+import Utils.Constants;
 import Utils.PicMosaic;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -16,8 +17,6 @@ import javax.servlet.http.HttpSession;
 @WebServlet(name = "PicPic", urlPatterns = {"/PicPic"})
 public class GetPictureObject extends HttpServlet 
 {
-    private static String UPLOAD_DIRECTORY = "/home/developer/temp";
-
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
@@ -33,7 +32,7 @@ public class GetPictureObject extends HttpServlet
             PicMosaic selectedPic = pictures.get(Integer.parseInt(_picId));
             int pos = selectedPic.shuffle_pos;        
             
-            Path path = Paths.get(UPLOAD_DIRECTORY + pictures.get(pos).generatedName + ".jpg");
+            Path path = Paths.get(Constants.UPLOAD_DIRECTORY + pictures.get(pos).generatedName + ".jpg");
             byte[] imageBytes  = Files.readAllBytes(path);
 
             response.setContentType("image/jpeg");
@@ -41,8 +40,9 @@ public class GetPictureObject extends HttpServlet
             response.getOutputStream().write(imageBytes);              
         }
         catch (Exception e)
-        {
-           Utils.Utilities.printErrorReport(response,e);          
+        {           
+            Utils.Utilities.printErrorReport(response,e);          
+             _session.invalidate();
         }
         finally {            
             //out.close();

@@ -2,6 +2,7 @@ package Web;
 
 import Cryptography.BCrypt;
 import Db.DBHandler;
+import Utils.Constants;
 import Utils.PicMosaic;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -17,7 +18,7 @@ import javax.servlet.http.HttpSession;
 
 @WebServlet(name = "UserPicPasswordLogin", urlPatterns = {"/UserPicPasswordLogin"})
 public class UserPicPasswordLogin extends HttpServlet
-{    
+{        
     private static DBHandler db_session;    
     private static ArrayList<PicMosaic> pictures;
 
@@ -41,6 +42,13 @@ public class UserPicPasswordLogin extends HttpServlet
         {            
             out.close();
         }
+        
+        HttpSession _session = request.getSession(false);      
+        if (_session != null)
+        {
+            _session.invalidate();
+        }
+        
         request.logout();
     }
 
@@ -48,6 +56,9 @@ public class UserPicPasswordLogin extends HttpServlet
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException 
     {        
+        HttpSession _session = request.getSession(true);               
+        db_session = (DBHandler) _session.getAttribute("db");
+        
         if (db_session == null)
         {
             try
@@ -57,25 +68,26 @@ public class UserPicPasswordLogin extends HttpServlet
                  if (!db_session.isConnected()) 
                  {
                     db_session.connect();
+                    _session.setAttribute("db", db_session);
                  }
             }
             catch (Exception e)
             {             
                 db_session = null;  
-                Utils.Utilities.printErrorReport(response,e);
+                Utils.Utilities.printErrorReport(response,e);                
                 request.logout();
+                _session.invalidate();
                 return;
             }
             request.logout();
-       }             
+       }                                         
         
-        HttpSession _session = request.getSession(true);      
         Object picsObject = _session.getAttribute("matrix");                
         pictures = (ArrayList<PicMosaic>)picsObject;     
         
         String selectedPictures = "";
         
-        int max = 3;
+        int max = Constants.NUMBER_OF_PICTURES_TO_SELECT;
         for (int i = 0; i < max; i++) 
         {
             selectedPictures += Utils.Utilities.GetImageNumberFromRequest(request,"passpic" + i,pictures);    
@@ -91,9 +103,7 @@ public class UserPicPasswordLogin extends HttpServlet
         
         try 
         {
-            ResultSet result = db_session.getUser(username);
-            
-            //String storedPassword = result.getString("picpassword");                    
+            ResultSet result = db_session.getUser(username);                                           
             
             String hashedPassword ;
             byte[] salt;            
@@ -108,16 +118,16 @@ public class UserPicPasswordLogin extends HttpServlet
             { 
                 Utils.Utilities.printErrorReport(response,e);
                 request.logout();
+                _session.invalidate();
                 return;
             }       
 
             String saltString1 = new String(salt);
                         
             if (!BCrypt.checkpw(selectedPictures + saltString1, hashedPassword))                                    
-            //if (!BCrypt.checkpw(hashedPicPassword, storedPassword))
-            //if (!storedPassword.equals(selectedPictures))
             {
                 Utils.Utilities.printErrorReport(response,new Exception("Invalid login data."));
+                _session.invalidate();
                 return;
             }
         } 
@@ -126,6 +136,7 @@ public class UserPicPasswordLogin extends HttpServlet
             db_session = null;  
             Utils.Utilities.printErrorReport(response,e);
             request.logout();
+            _session.invalidate();
             return;
         }
         

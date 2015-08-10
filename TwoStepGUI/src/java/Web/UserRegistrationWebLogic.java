@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import Cryptography.BCrypt;
+import Utils.Constants;
 import Utils.PicMosaic;
 import java.io.*;
 import java.util.ArrayList;
@@ -17,27 +18,26 @@ import javax.servlet.http.HttpSession;
 
 
 @WebServlet(name = "UserWebLogic", urlPatterns = {"/UserWebLogic"})
-public class UserRegistrationWebLogic extends HttpServlet {
+public class UserRegistrationWebLogic extends HttpServlet 
+{
 
-    private static String UPLOAD_DIRECTORY = "/home/developer/temp";    
     private static DBHandler db_session;
-    private static ArrayList<PicMosaic> pictures;
-    
-    private static int load_state = 0;    
+    private static ArrayList<PicMosaic> pictures;        
         
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException 
     {
         response.setContentType("text/html;charset=UTF-8");
         
-        Utils.Utilities.printPictureMosaic(pictures,response.getWriter(),"PicPassStore",10,3);    
+        Utils.Utilities.printPictureMosaic(pictures,response.getWriter(),"PicPassStore",10,Constants.NUMBER_OF_PICTURES_TO_SELECT);    
     }
     
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, FileNotFoundException
     {                                   
-        HttpSession _session = request.getSession(true);        
+        HttpSession _session = request.getSession(true);
+        db_session = (DBHandler) _session.getAttribute("db");
         
         if (db_session == null)
         {
@@ -47,12 +47,14 @@ public class UserRegistrationWebLogic extends HttpServlet {
                 
                  if (!db_session.isConnected()) {
                     db_session.connect();
+                    _session.setAttribute("db", db_session);
                  }
             }
             catch (Exception e)
             {             
                 db_session = null;       
                 Utils.Utilities.printErrorReport(response,e);
+                _session.invalidate();
                 request.logout();
                 return;
             }
@@ -70,6 +72,7 @@ public class UserRegistrationWebLogic extends HttpServlet {
         {
           if (db_session.doesUserExist(userName))
           {
+            Utils.Utilities.printErrorReport(response,new Exception("User already exists. Try another name."));
             return;
           }
         }
@@ -77,6 +80,7 @@ public class UserRegistrationWebLogic extends HttpServlet {
         {
             Utils.Utilities.printErrorReport(response,e);
             request.logout();
+            _session.invalidate();
             return;
         }
         
@@ -90,6 +94,7 @@ public class UserRegistrationWebLogic extends HttpServlet {
             salt = null;
             Utils.Utilities.printErrorReport(response,e);
             request.logout();
+            _session.invalidate();
             return;
         }
                 
@@ -104,18 +109,20 @@ public class UserRegistrationWebLogic extends HttpServlet {
         { 
             Utils.Utilities.printErrorReport(response,e);
             request.logout();
+            _session.invalidate();
             return;
         }       
 
         try
         {
             pictures = new ArrayList<PicMosaic>();    
-            Utils.Utilities.GeneratePicturesMosaic(db_session, UPLOAD_DIRECTORY, pictures);
+            Utils.Utilities.GeneratePicturesMosaic(db_session, Constants.UPLOAD_DIRECTORY, pictures);
         }
         catch (Exception e)
         {            
              Utils.Utilities.printErrorReport(response,e);
              request.logout();
+             _session.invalidate();
              return;
         }
             

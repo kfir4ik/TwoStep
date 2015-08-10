@@ -2,6 +2,7 @@ package Web;
 
 import Cryptography.BCrypt;
 import Db.DBHandler;
+import Utils.Constants;
 import Utils.PicMosaic;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -18,6 +19,7 @@ import javax.servlet.http.HttpSession;
 @WebServlet(name = "PicPassStore", urlPatterns = {"/PicPassStore"})
 public class PicPassStore extends HttpServlet
 {    
+
     private static DBHandler db_session;    
     private static ArrayList<PicMosaic> pictures;
 
@@ -47,6 +49,9 @@ public class PicPassStore extends HttpServlet
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException 
     {        
+        HttpSession _session = request.getSession(true);   
+        db_session = (DBHandler) _session.getAttribute("db");    
+        
         if (db_session == null)
         {
             try
@@ -55,18 +60,18 @@ public class PicPassStore extends HttpServlet
                 
                  if (!db_session.isConnected()) {
                     db_session.connect();
+                     _session.setAttribute("db", db_session);
                  }
             }
             catch (Exception e)
             {             
                 db_session = null;
                 Utils.Utilities.printErrorReport(response,e);          
+                _session.invalidate();
                 return;
             }
         }             
-        
-        HttpSession _session = request.getSession(true);      
-        
+                        
         Object picsObject = _session.getAttribute("matrix");                
         
         String username = (String)_session.getAttribute("username");
@@ -74,7 +79,7 @@ public class PicPassStore extends HttpServlet
         pictures = (ArrayList<PicMosaic>)picsObject;                     
         String selectedPictures = "";
         
-        int max = 3;
+        int max = Constants.NUMBER_OF_PICTURES_TO_SELECT;
         for (int i = 0; i < max; i++) 
         {
             selectedPictures += Utils.Utilities.GetImageNumberFromRequest(request,"passpic" + i,pictures);    
@@ -96,6 +101,7 @@ public class PicPassStore extends HttpServlet
         catch (SQLException e) 
         { 
             Utils.Utilities.printErrorReport(response,e);
+             _session.invalidate();
             return;
         }       
 
@@ -112,6 +118,7 @@ public class PicPassStore extends HttpServlet
         {
             db_session = null;  
             Utils.Utilities.printErrorReport(response,e);          
+             _session.invalidate();
             return;
         }
         

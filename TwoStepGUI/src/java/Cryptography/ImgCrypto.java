@@ -1,6 +1,6 @@
 package Cryptography;
 
-import java.io.ByteArrayOutputStream;
+import Utils.Constants;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -33,19 +33,6 @@ public class ImgCrypto {
         
     // The defualt properites, usualy obtained from config file
     // but in any case of failure the values is taken as they are written here...
-    public static int blockSize = 16;     
-    public static String upload_direcotry = "/home/developer/temp";
-    public static String keystore_file_name = upload_direcotry + "a.keystore";
-    public static String keystore_password = "password";
-    public static String signature_algo = "MD5withRSA";    
-    public static String save_enc_file_name = upload_direcotry + "file_enc";
-    public static String save_dec_file_name = upload_direcotry + "file_dec";    
-    public static String pk_file_name = upload_direcotry + "publickey";    
-    public static int rsa_key_size = 512;    
-    public static String secure_random_value = "SHA1PRNG";
-    public static String key_gen_algorithem = "RSA";
-    public static String key_store_type = "JCEKS";
-    public static String aes_type = "AES/CBC/PKCS5Padding";
     
     //function writes encrypted file into the Disk file
     //the file includes the signature at the end of it
@@ -136,10 +123,10 @@ public class ImgCrypto {
         //part 1
         //generate secret key for program process
         //----------------------------------------------------------------------------
-        SecureRandom secRandom = SecureRandom.getInstance(secure_random_value);
+        SecureRandom secRandom = SecureRandom.getInstance(Constants.secure_random_value);
         secRandom.setSeed(0); //startng random file
         
-        byte[] generatedKey = new byte[blockSize];
+        byte[] generatedKey = new byte[Constants.blockSize];
         
         secRandom.nextBytes(generatedKey);  //generate random value key
         //----------------------------------------------------------------------------
@@ -153,7 +140,7 @@ public class ImgCrypto {
 
         //init the Cipher algorithem (symetric key for data encryption)
         //----------------------------------------------------------------------------
-        Cipher encryptCipher = Cipher.getInstance(aes_type);
+        Cipher encryptCipher = Cipher.getInstance(Constants.aes_type);
        
         // take empty IV for simplicity ....
         byte[] iv_encoded= { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
@@ -165,15 +152,15 @@ public class ImgCrypto {
         
         //creates public / private keys using key generating algoritm
         //==============================================================
-        KeyPairGenerator kpg = KeyPairGenerator.getInstance(key_gen_algorithem);                        
-        kpg.initialize(rsa_key_size);  //init the object with key-size
+        KeyPairGenerator kpg = KeyPairGenerator.getInstance(Constants.key_gen_algorithem);                        
+        kpg.initialize(Constants.rsa_key_size);  //init the object with key-size
         KeyPair kp = kpg.genKeyPair();
         PublicKey publicKey = kp.getPublic();
         PrivateKey privateKey = kp.getPrivate();         
 
         //stores the public key into file (to be used in reader program)
         //==============================================================        
-        FileOutputStream fos = new FileOutputStream(pk_file_name);
+        FileOutputStream fos = new FileOutputStream(Constants.pk_file_name);
         ObjectOutputStream oos = new ObjectOutputStream(fos);             
         oos.writeObject(publicKey);
         oos.close();
@@ -181,29 +168,29 @@ public class ImgCrypto {
         //key store logic
         //=================================================================
         //get keystore filename
-        String keystoreFilename = keystore_file_name;
+        String keystoreFilename = Constants.keystore_file_name;
         //get keystore password
-        char[] password = keystore_password.toCharArray(); //sets keystore password
+        char[] password = Constants.keystore_password.toCharArray(); //sets keystore password
 
         FileOutputStream fOut = new FileOutputStream(keystoreFilename); //output stream object
-        KeyStore keystore = KeyStore.getInstance(key_store_type); //gets instance
+        KeyStore keystore = KeyStore.getInstance(Constants.key_store_type); //gets instance
         
         keystore.load(null, password); //creates new, blank keystore file 
         
         //store private key in KeyStore::::
         //================================================================
         byte[] key_data = privateKey.getEncoded(); //encode private key for saving in store
-        SecretKey sk = new SecretKeySpec(key_data,0,key_data.length,key_gen_algorithem);        
+        SecretKey sk = new SecretKeySpec(key_data,0,key_data.length,Constants.key_gen_algorithem);        
         KeyStore.SecretKeyEntry skEntry = new KeyStore.SecretKeyEntry(sk);              
         keystore.setEntry("secretKeyAlias", skEntry, new KeyStore.PasswordProtection(password));
                          
         keystore.store(fOut, password); //store private key enveloped with SecretKey !                          
         
         //======================================================================
-        byte[] signature = Sign(load_file_name, privateKey,signature_algo); //addes signature/hash to given file        
+        byte[] signature = Sign(load_file_name, privateKey,Constants.signature_algo); //addes signature/hash to given file        
         
         //save the encrypted file on the disk
-        Write_encrypted_file(load_file_name,save_enc_file_name,encryptCipher,signature);        
+        Write_encrypted_file(load_file_name,Constants.save_enc_file_name,encryptCipher,signature);        
 
         // configFile.store(new FileOutputStream(config_file_path_location),null); //saves the changes to config file        
         

@@ -1,9 +1,6 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package Cryptography;
 
+import Utils.Constants;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -23,7 +20,6 @@ import java.security.Signature;
 import java.security.SignatureException;
 import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.PKCS8EncodedKeySpec;
-import java.util.Arrays;
 import java.util.Properties;
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -34,27 +30,9 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
-/**
- *
- * @author kfirsa
- */
 public class ImgCryptoReader {
-       // The defualt properites, usualy obtained from config file
-    // but in any case of failure the values is taken as they are written here...
-    public static int blockSize = 16; 
-    public static String upload_direcotry = "/home/developer/temp";
-    public static String keystore_file_name = upload_direcotry + "a.keystore";
-    public static String keystore_password = "password";
-    public static String signature_algo = "MD5withRSA";    
-    public static String save_enc_file_name = upload_direcotry + "file_enc";
-    public static String save_dec_file_name = upload_direcotry + "file_dec";    
-    public static String pk_file_name = upload_direcotry + "publickey"; 
-    public static int rsa_key_size = 512;    
-    public static String secure_random_value = "SHA1PRNG";
-    public static String key_gen_algorithem = "RSA";
-    public static String key_store_type = "JCEKS";
-    public static String aes_type = "AES/CBC/PKCS5Padding";
-    //public static String config_file_name = "C:\\Users\\kfirsa\\Documents\\NetBeansProjects\\TwoStepGUI\\config_file.properties";  
+    // The defualt properites, usualy obtained from config file
+    // but in any case of failure the values is taken as they are written here...    
     
     //function for writing decoded file with digiest validation checking
     public static boolean Write_decrypted_file(String _input_file_name, String _output_file_name,Cipher decryptCipher,PublicKey publicKey)
@@ -98,7 +76,7 @@ public class ImgCryptoReader {
         byte[] sigbytes = CopyMemory((int)file_length-64,64,_mem.toByteArray()); //extract signature part from the file
         byte[] data = CopyMemory(0,(int)file_length-64,_mem.toByteArray()); //extract data part from the file                  
         
-        if (Verify(publicKey,signature_algo, sigbytes, data)) //verifies the file signature
+        if (Verify(publicKey,Constants.signature_algo, sigbytes, data)) //verifies the file signature
         {
             fos.write(data); //dump the data part to hdd file
             fos.close();     //close writer
@@ -157,14 +135,14 @@ public class ImgCryptoReader {
             IllegalBlockSizeException, BadPaddingException, NoSuchProviderException, 
             InvalidAlgorithmParameterException, FileNotFoundException, IOException, Exception 
     {
-        save_dec_file_name = decFileName;
+        Constants.save_dec_file_name = decFileName;
         //gets user configuration file
         Properties configFile = new Properties();   //init prop object
         
 //String config_file_path_location = config_file_name;                        
 //String config_file_path_location = "C:\\Users\\kfirsa\\Documents\\NetBeansProjects\\TwoStepGUI\\config_file.properties";
         
-        save_enc_file_name = upload_direcotry + "encpic";        
+        Constants.save_enc_file_name = Constants.upload_direcotry + "encpic";        
                 
 
 //load properites from file
@@ -194,23 +172,23 @@ public class ImgCryptoReader {
                      
         //gets public key from file
         //===============================================================
-        FileInputStream fis = new FileInputStream(pk_file_name);
+        FileInputStream fis = new FileInputStream(Constants.pk_file_name);
 	ObjectInputStream ois = new ObjectInputStream(fis);       
         PublicKey publicKey = (PublicKey)ois.readObject();                                
                                          
         //key store logic
         //=================================================================
         //get keystore filename
-        KeyStore keystore = KeyStore.getInstance(key_store_type); //gets instance        
+        KeyStore keystore = KeyStore.getInstance(Constants.key_store_type); //gets instance        
                 
         //gets keystore password from config file
-        char[] password = keystore_password.toCharArray(); 
+        char[] password = Constants.keystore_password.toCharArray(); 
         
         //loads the keystore file
         //=================================================================
         fis = null;
         try {
-            fis = new java.io.FileInputStream(keystore_file_name);
+            fis = new java.io.FileInputStream(Constants.keystore_file_name);
             keystore.load(fis, password);
         } finally {
             if (fis != null) {
@@ -228,7 +206,7 @@ public class ImgCryptoReader {
         //gets the private key from keystore 
         byte[] key_bytes = skEntry.getEncoded();
         PKCS8EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(key_bytes); //decode teh private key
-        KeyFactory kf = KeyFactory.getInstance(key_gen_algorithem);
+        KeyFactory kf = KeyFactory.getInstance(Constants.key_gen_algorithem);
         PrivateKey privateKey = kf.generatePrivate(privateKeySpec);   //regenerate the private key                                                                                     
 
         //get AES algorithem properties from config file
@@ -248,13 +226,13 @@ public class ImgCryptoReader {
         SecretKey keyValue = new SecretKeySpec(aes_encoded,"AES");   //create the real key  
         AlgorithmParameterSpec IVspec = new IvParameterSpec(iv_encoded);      //create the IV object     
                                 
-        Cipher encryptCipher = Cipher.getInstance(aes_type);
-        Cipher cipher = Cipher.getInstance(key_gen_algorithem);                   
+        Cipher encryptCipher = Cipher.getInstance(Constants.aes_type);
+        Cipher cipher = Cipher.getInstance(Constants.key_gen_algorithem);                   
         cipher.init(Cipher.DECRYPT_MODE, privateKey); //opens enceyption decrypt private key
         encryptCipher.init(Cipher.DECRYPT_MODE, keyValue, IVspec);
                     
         //create decoded file !
-        boolean status = Write_decrypted_file(save_enc_file_name,save_dec_file_name,encryptCipher,publicKey);       
+        boolean status = Write_decrypted_file(Constants.save_enc_file_name,Constants.save_dec_file_name,encryptCipher,publicKey);       
         
         //boolean status = Write_decrypted_file(save_enc_file_name,save_dec_file_name,p,publicKey);       
          

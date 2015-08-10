@@ -1,6 +1,7 @@
 package Db;
 
 import Cryptography.ImgCrypto;
+import Utils.Constants;
 import java.io.File;
 import java.io.FileInputStream;
 import java.sql.Connection;
@@ -197,7 +198,7 @@ public class DBHandler
                                  
             String encFileName = ImgCrypto.EncryptFileData(uploadDirectory + "tmpfile");            
             
-            File encFile = new File(ImgCrypto.save_enc_file_name);
+            File encFile = new File(Constants.save_enc_file_name);
             FileInputStream fin = new FileInputStream(encFile);
             
             File pubkeyFile = new File(uploadDirectory + "publickey");
